@@ -5,7 +5,7 @@ import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 
 import Dashboard from './components/UI/Dashboard';
-import Login from './components/UI/Login';
+import Login from './components/ui/Login';
 import AlertRulesConfig from './components/UI/AlertRulesConfig';
 import useProductionData from './components/hooks/useProductionData';
 
