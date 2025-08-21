@@ -4,9 +4,9 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from 'firebas
 import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { Loader2 } from 'lucide-react';
 
-import Dashboard from './components/UI/Dashboard';
+import Dashboard from './components/ui/Dashboard';
 import Login from './components/ui/Login';
-import AlertRulesConfig from './components/UI/AlertRulesConfig';
+import AlertRulesConfig from './components/ui/AlertRulesConfig';
 import useProductionData from './components/hooks/useProductionData';
 
 // Componente principal de la aplicación
