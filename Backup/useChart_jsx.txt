@@ -1,0 +1,88 @@
+import { useEffect, useRef } from "react";
+import Chart from "chart.js/auto";
+import 'chartjs-adapter-date-fns';
+import alertZonesPlugin from "../ChartPlugin";
+
+const useChart = (chartRef, productionData, alertRules) => {
+    const myChart = useRef(null);
+
+    useEffect(() => {
+        if (chartRef.current && productionData.length > 0) {
+            const data = productionData.map((d) => ({
+                x: d.timestamp,
+                y: d.cycleTime,
+            }));
+
+            const ctx = chartRef.current.getContext("2d");
+
+            if (myChart.current) {
+                myChart.current.destroy();
+            }
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: "time",
+                        time: {
+                            unit: 'second',
+                            displayFormats: {
+                                second: 'HH:mm:ss'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: "Tiempo"
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Valor de la Variable",
+                        },
+                        min: 0,
+                        max: 100,
+                    },
+                },
+                animation: false,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: (context) => {
+                                return `Tiempo: ${new Date(context[0].raw.x).toLocaleTimeString()}`;
+                            },
+                            label: (context) => `Valor: ${context.raw.y.toFixed(2)}`,
+                        },
+                    },
+                    alertZones: {
+                        alertRules: alertRules,
+                    },
+                },
+            };
+
+            myChart.current = new Chart(ctx, {
+                type: "line",
+                data: {
+                    datasets: [{
+                        label: "Producción",
+                        data: data,
+                        borderColor: "rgb(75, 192, 192)",
+                        backgroundColor: "rgba(75, 192, 192, 0.2)",
+                        tension: 0.1,
+                        pointRadius: 0,
+                    }, ],
+                },
+                options: chartOptions,
+                plugins: [alertZonesPlugin],
+            });
+        }
+    }, [chartRef, productionData, alertRules]);
+
+    return myChart.current;
+};
+
+export default useChart;
