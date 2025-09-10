@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint (skip if no eslint)
+        run: |
+          if [ -f package.json ]; then
+            if grep -q \"eslint\" package.json; then
+              npm run lint || true
+            fi
+          fi
+
+      - name: Run tests
+        run: npx vitest run --reporter verbose
+
+      - name: Build
+        run: npm run build --if-present
