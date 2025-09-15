@@ -1,4 +1,4 @@
-import React from "react"; // 👈 NECESARIO para evitar el error
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Config from "./pages/Config";
@@ -13,3 +13,6 @@ export default function App() {
     </Router>
   );
 }
+
+
+
