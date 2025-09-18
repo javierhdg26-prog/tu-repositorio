@@ -106,7 +106,7 @@ function EntityForm({ type, initialData, onSubmit, onClose }) {
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
           <Dialog.Title className="text-lg font-bold mb-4">
-            {initialData ? \`Editar \${type}\` : \`Crear \${type}\`}
+            {initialData ? `Editar ${type}` : `Crear ${type}`}
           </Dialog.Title>
           {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -333,17 +333,17 @@ function EntityColumn({ title, Icon, data, onCreate, onUpdate, onDelete }) {
 
   const handleCreate = async (formData) => {
     await onCreate(formData);
-    setNotification(\`\${title.slice(0, -1)} creado exitosamente\`);
+    setNotification(`${title.slice(0, -1)} creado exitosamente`);
   };
 
   const handleUpdate = async (id, formData) => {
     await onUpdate(id, formData);
-    setNotification(\`\${title.slice(0, -1)} actualizado exitosamente\`);
+    setNotification(`${title.slice(0, -1)} actualizado exitosamente`);
   };
 
   const handleDelete = async (id) => {
     await onDelete(id);
-    setNotification(\`\${title.slice(0, -1)} eliminado exitosamente\`);
+    setNotification(`${title.slice(0, -1)} eliminado exitosamente`);
   };
 
   return (
@@ -357,7 +357,7 @@ function EntityColumn({ title, Icon, data, onCreate, onUpdate, onDelete }) {
         <Search className="absolute left-3 top-3 text-gray-400" size={18} />
         <input
           type="text"
-          placeholder={\`Buscar \${title.toLowerCase()}...\`}
+          placeholder={`Buscar ${title.toLowerCase()}...`}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
