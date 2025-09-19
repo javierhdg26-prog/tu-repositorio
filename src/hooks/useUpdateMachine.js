@@ -9,12 +9,11 @@ export default function useUpdateMachine() {
         ...data,
         updatedAt: serverTimestamp(),
       });
-      console.log("Máquina actualizada:", id);
+      console.log("✅ Máquina actualizada:", id);
     } catch (error) {
-      console.error("Error al actualizar máquina:", error);
+      console.error("❌ Error al actualizar máquina:", error);
     }
   };
 
   return { updateMachine };
 }
-

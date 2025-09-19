@@ -1,21 +1,18 @@
 import { db } from "../firebase/initFirebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
-const useCreateUser = () => {
-  const createUser = async (userData) => {
+export default function useCreateUser() {
+  const createUser = async (data) => {
     try {
       await addDoc(collection(db, "users"), {
-        ...userData,
+        ...data,
         timestamp: serverTimestamp(),
       });
-      return { success: true };
+      console.log("✅ Usuario creado exitosamente");
     } catch (error) {
-      console.error("Error creando usuario:", error);
-      return { success: false, error };
+      console.error("❌ Error al crear usuario:", error);
     }
   };
 
-  return createUser;
-};
-
-export default useCreateUser;
+  return { createUser };
+}

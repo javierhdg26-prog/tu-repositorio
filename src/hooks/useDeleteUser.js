@@ -1,18 +1,15 @@
-import { db } from "../firebase/initFirebase";
 import { doc, deleteDoc } from "firebase/firestore";
+import { db } from "../firebase/initFirebase";
 
-const useDeleteUser = () => {
+export default function useDeleteUser() {
   const deleteUser = async (id) => {
     try {
       await deleteDoc(doc(db, "users", id));
-      return { success: true };
+      console.log("✅ Usuario eliminado:", id);
     } catch (error) {
-      console.error("Error eliminando usuario:", error);
-      return { success: false, error };
+      console.error("❌ Error al eliminar usuario:", error);
     }
   };
 
-  return deleteUser;
-};
-
-export default useDeleteUser;
+  return { deleteUser };
+}

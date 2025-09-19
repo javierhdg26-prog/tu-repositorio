@@ -1,19 +1,15 @@
-import { db } from "../firebase/initFirebase";
 import { doc, deleteDoc } from "firebase/firestore";
+import { db } from "../firebase/initFirebase";
 
-const useDeleteMachine = () => {
+export default function useDeleteMachine() {
   const deleteMachine = async (id) => {
     try {
       await deleteDoc(doc(db, "machines", id));
-      return { success: true };
+      console.log("✅ Máquina eliminada:", id);
     } catch (error) {
-      console.error("Error eliminando máquina:", error);
-      return { success: false, error };
+      console.error("❌ Error al eliminar máquina:", error);
     }
   };
 
-  return deleteMachine;
-};
-
-export default useDeleteMachine;
-
+  return { deleteMachine };
+}

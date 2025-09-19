@@ -9,9 +9,9 @@ export default function useUpdateUser() {
         ...data,
         updatedAt: serverTimestamp(),
       });
-      console.log("Usuario actualizado:", id);
+      console.log("✅ Usuario actualizado:", id);
     } catch (error) {
-      console.error("Error al actualizar usuario:", error);
+      console.error("❌ Error al actualizar usuario:", error);
     }
   };
 
