@@ -1,0 +1,149 @@
+import React, { useState } from "react";
+import logo from "../assets/logo.svg";
+
+export default React.memo(function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <header className="pb-4 bg-white lg:pb-0 shadow">
+      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        {/* Navbar desktop */}
+        <nav className="flex items-center justify-between h-16 lg:h-20">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <a href="/" title="SmartFlow" className="flex items-center">
+              <img
+                className="w-auto h-8 lg:h-10"
+                src={logo}
+                alt="SmartFlow Logo"
+              />
+            </a>
+          </div>
+
+          {/* Botón menú móvil */}
+          <button
+            type="button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="inline-flex p-2 text-black transition-all duration-200 rounded-md lg:hidden focus:bg-gray-100 hover:bg-gray-100"
+          >
+            {/* Icono hamburguesa */}
+            {!menuOpen && (
+              <svg
+                className="block w-6 h-6"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 8h16M4 16h16"
+                />
+              </svg>
+            )}
+
+            {/* Icono X */}
+            {menuOpen && (
+              <svg
+                className="block w-6 h-6"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            )}
+          </button>
+
+          {/* Links desktop */}
+          <div className="hidden lg:flex lg:items-center lg:ml-auto lg:space-x-10">
+            <a
+              href="#features"
+              className="text-base font-medium text-black transition-all duration-200 hover:text-blue-600"
+            >
+              Features
+            </a>
+            <a
+              href="#solutions"
+              className="text-base font-medium text-black transition-all duration-200 hover:text-blue-600"
+            >
+              Solutions
+            </a>
+            <a
+              href="#resources"
+              className="text-base font-medium text-black transition-all duration-200 hover:text-blue-600"
+            >
+              Resources
+            </a>
+            <a
+              href="#pricing"
+              className="text-base font-medium text-black transition-all duration-200 hover:text-blue-600"
+            >
+              Pricing
+            </a>
+          </div>
+
+          {/* Botón desktop */}
+          <a
+            href="#start"
+            className="items-center justify-center hidden px-4 py-2 ml-6 text-base font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md lg:inline-flex hover:bg-blue-700"
+          >
+            Get started
+          </a>
+        </nav>
+
+        {/* Menú móvil desplegable */}
+        {menuOpen && (
+          <nav className="pt-4 pb-6 mt-2 bg-white border border-gray-200 rounded-md shadow-md lg:hidden">
+            <div className="flow-root">
+              <div className="flex flex-col px-6 -my-2 space-y-1">
+                <a
+                  href="#features"
+                  className="inline-flex py-2 text-base font-medium text-black transition-all duration-200 hover:text-blue-600"
+                >
+                  Features
+                </a>
+                <a
+                  href="#solutions"
+                  className="inline-flex py-2 text-base font-medium text-black transition-all duration-200 hover:text-blue-600"
+                >
+                  Solutions
+                </a>
+                <a
+                  href="#resources"
+                  className="inline-flex py-2 text-base font-medium text-black transition-all duration-200 hover:text-blue-600"
+                >
+                  Resources
+                </a>
+                <a
+                  href="#pricing"
+                  className="inline-flex py-2 text-base font-medium text-black transition-all duration-200 hover:text-blue-600"
+                >
+                  Pricing
+                </a>
+              </div>
+            </div>
+            <div className="px-6 mt-4">
+              <a
+                href="#start"
+                className="inline-flex justify-center w-full px-4 py-2 text-base font-semibold text-white transition-all duration-200 bg-blue-600 rounded-md hover:bg-blue-700"
+              >
+                Get started
+              </a>
+            </div>
+          </nav>
+        )}
+      </div>
+    </header>
+  );
+}
+
+

@@ -1,3 +1,6 @@
+
+===== Archivo: firebase/initFirebase.js =====
+
 // src/firebase/initFirebase.js
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";

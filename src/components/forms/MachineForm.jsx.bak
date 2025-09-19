@@ -1,0 +1,55 @@
+// src/components/forms/MachineForm.jsx
+import React, { useState, useEffect } from "react";
+
+const MachineForm = ({ onSubmit, initialData, onCancel }) => {
+  const [formData, setFormData] = useState({
+    nombre: "",
+    tipo: "",
+    estado: "",
+  });
+
+  useEffect(() => {
+    if (initialData) setFormData(initialData);
+  }, [initialData]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+    setFormData({ nombre: "", tipo: "", estado: "" });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="entity-form">
+      <input
+        name="nombre"
+        placeholder="Nombre máquina"
+        value={formData.nombre}
+        onChange={handleChange}
+        required
+      />
+      <input
+        name="tipo"
+        placeholder="Tipo"
+        value={formData.tipo}
+        onChange={handleChange}
+        required
+      />
+      <input
+        name="estado"
+        placeholder="Estado"
+        value={formData.estado}
+        onChange={handleChange}
+        required
+      />
+      <button type="submit">Guardar</button>
+      {onCancel && <button onClick={onCancel}>Cancelar</button>}
+    </form>
+  );
+};
+
+export default MachineForm;

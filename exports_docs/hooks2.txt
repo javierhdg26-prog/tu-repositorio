@@ -1,0 +1,67 @@
+
+===== Archivo: hooks/useUpdatePiece.js =====
+
+// src/hooks/useUpdatePiece.js
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/initFirebase";
+
+export default function useUpdatePiece() {
+  const updatePiece = async (id, data) => {
+    try {
+      const pieceRef = doc(db, "pieces", id);
+      await updateDoc(pieceRef, {
+        ...data,
+        timestamp: serverTimestamp(),
+      });
+      console.log("Pieza actualizada exitosamente");
+    } catch (error) {
+      console.error("Error al actualizar pieza:", error);
+    }
+  };
+
+  return { updatePiece };
+}
+
+
+===== Archivo: hooks/useUpdatePieceCategory.js =====
+
+import { db } from "../firebase/initFirebase";
+import { doc, updateDoc } from "firebase/firestore";
+
+const useUpdatePieceCategory = () => {
+  const updatePieceCategory = async (id, data) => {
+    try {
+      await updateDoc(doc(db, "pieceCategories", id), data);
+      return { success: true };
+    } catch (error) {
+      console.error("Error actualizando categoría de pieza:", error);
+      return { success: false, error };
+    }
+  };
+
+  return updatePieceCategory;
+};
+
+export default useUpdatePieceCategory;
+
+===== Archivo: hooks/useUpdateUser.js =====
+
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/initFirebase";
+
+export default function useUpdateUser() {
+  const updateUser = async (id, data) => {
+    try {
+      const ref = doc(db, "users", id);
+      await updateDoc(ref, {
+        ...data,
+        updatedAt: serverTimestamp(),
+      });
+      console.log("Usuario actualizado:", id);
+    } catch (error) {
+      console.error("Error al actualizar usuario:", error);
+    }
+  };
+
+  return { updateUser };
+}

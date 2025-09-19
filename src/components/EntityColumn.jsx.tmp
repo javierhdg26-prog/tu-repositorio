@@ -1,0 +1,26 @@
+import React from "react";
+import EntityCard from "./EntityCard";
+
+  return (
+    <div className="bg-white shadow-md rounded-xl p-6">
+      <div className="flex items-center mb-4">
+        <Icon className="w-6 h-6 text-blue-600 mr-2" />
+        <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+      </div>
+      <div className="space-y-3">
+        {data && data.length > 0 ? (
+          data.map((item, idx) => (
+            <EntityCard
+              key={idx}
+              item={item}
+              onEdit={() => onEdit(item)}
+              onDelete={() => onDelete(item)}
+            />
+          ))
+        ) : (
+          <p className="text-gray-500 text-sm">No hay registros</p>
+        )}
+      </div>
+    </div>
+  );
+}

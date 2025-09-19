@@ -1,0 +1,302 @@
+
+===== Archivo: pages/Config_U.jsx =====
+
+import React, { useState } from "react";
+
+// Hooks de CRUD
+import useCreateUser from "../hooks/useCreateUser";
+import useCreateMachine from "../hooks/useCreateMachine";
+import useCreatePiece from "../hooks/useCreatePiece";
+
+// Modal
+import CreateUserModal from "../components/CreateUserModal";
+
+export default function Config() {
+  // Estados de búsqueda
+  const [userSearch, setUserSearch] = useState("");
+  const [machineSearch, setMachineSearch] = useState("");
+  const [pieceSearch, setPieceSearch] = useState("");
+
+  // Estado modal usuario
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
+  // Hooks de creación
+  const {
+    createUser,
+    loading: loadingUser,
+    error: errorUser,
+    success: successUser,
+  } = useCreateUser();
+
+  const {
+    createMachine,
+    loading: loadingMachine,
+    error: errorMachine,
+    success: successMachine,
+  } = useCreateMachine();
+
+  const {
+    createPiece,
+    loading: loadingPiece,
+    error: errorPiece,
+    success: successPiece,
+  } = useCreatePiece();
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <h1 className="text-3xl font-bold text-center text-blue-700 mb-10">
+        Configuración del Sistema
+      </h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        {/* ===================== USERS ===================== */}
+        <div className="bg-white p-6 rounded-xl shadow-md border">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">Usuarios</h2>
+          <input
+            type="text"
+            value={userSearch}
+            onChange={(e) => setUserSearch(e.target.value)}
+            placeholder="Buscar usuarios..."
+            className="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+
+          {/* Botón ahora abre modal */}
+          <button
+            onClick={() => setIsUserModalOpen(true)}
+            disabled={loadingUser}
+            className="mt-6 w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          >
+            {loadingUser ? "Creando..." : "➕ Crear Usuario"}
+          </button>
+          {errorUser && <p className="text-red-500 mt-2">{errorUser}</p>}
+          {successUser && <p className="text-green-500 mt-2">{successUser}</p>}
+        </div>
+
+        {/* ===================== MACHINES ===================== */}
+        <div className="bg-white p-6 rounded-xl shadow-md border">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">Máquinas</h2>
+          <input
+            type="text"
+            value={machineSearch}
+            onChange={(e) => setMachineSearch(e.target.value)}
+            placeholder="Buscar máquinas..."
+            className="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+
+          {/* Botón de creación rápida */}
+          <button
+            onClick={() =>
+              createMachine({
+                name: "Nueva Máquina",
+                reference: "REF-001",
+                description: "Máquina de prueba",
+                imageURL: "https://via.placeholder.com/40",
+              })
+            }
+            disabled={loadingMachine}
+            className="mt-6 w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          >
+            {loadingMachine ? "Creando..." : "➕ Crear Máquina"}
+          </button>
+          {errorMachine && <p className="text-red-500 mt-2">{errorMachine}</p>}
+          {successMachine && <p className="text-green-500 mt-2">{successMachine}</p>}
+        </div>
+
+        {/* ===================== PIECES ===================== */}
+        <div className="bg-white p-6 rounded-xl shadow-md border">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700">Piezas</h2>
+          <input
+            type="text"
+            value={pieceSearch}
+            onChange={(e) => setPieceSearch(e.target.value)}
+            placeholder="Buscar piezas..."
+            className="w-full p-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+
+          {/* Botón de creación rápida */}
+          <button
+            onClick={() =>
+              createPiece({
+                name: "Nueva Pieza",
+                reference: "PIEZA-001",
+                description: "Pieza de prueba",
+                imageURL: "https://via.placeholder.com/40",
+                cycleTime: 5,
+              })
+            }
+            disabled={loadingPiece}
+            className="mt-6 w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          >
+            {loadingPiece ? "Creando..." : "➕ Crear Pieza"}
+          </button>
+          {errorPiece && <p className="text-red-500 mt-2">{errorPiece}</p>}
+          {successPiece && <p className="text-green-500 mt-2">{successPiece}</p>}
+        </div>
+      </div>
+
+      {/* Modal de creación de usuario */}
+      <CreateUserModal
+        isOpen={isUserModalOpen}
+        onClose={() => setIsUserModalOpen(false)}
+        onCreate={(data) => createUser(data)}
+      />
+    </div>
+  );
+}
+
+===== Archivo: pages/CreateUserForm.jsx =====
+
+import React, { useState } from "react";
+import useCreateUser from "../hooks/useCreateUser";
+import Notification from "../components/Notification";
+
+export default function CreateUserForm() {
+  const [formData, setFormData] = useState({
+    name: "",
+    position: "",
+    imageURL: "",
+    role: "",
+  });
+
+  const { createUser, notification, setNotification } = useCreateUser();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    createUser(formData);
+    setFormData({ name: "", position: "", imageURL: "", role: "" });
+  };
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          placeholder="Nombre completo"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+        />
+
+        <input
+          type="text"
+          placeholder="Cargo"
+          value={formData.position}
+          onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+          required
+        />
+
+        <input
+          type="url"
+          placeholder="URL de la imagen de perfil"
+          value={formData.imageURL}
+          onChange={(e) => setFormData({ ...formData, imageURL: e.target.value })}
+        />
+
+        <select
+          value={formData.role}
+          onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+          required
+        >
+          <option value="">Seleccione rol</option>
+          <option value="Gerente">Gerente</option>
+          <option value="Supervisor">Supervisor</option>
+          <option value="Operario">Operario</option>
+        </select>
+
+        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+          Crear Usuario
+        </button>
+      </form>
+
+      <Notification message={notification} onClose={() => setNotification("")} />
+    </div>
+  );
+}
+
+===== Archivo: pages/Login.jsx =====
+
+import React, { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase/initFirebase";
+import { useNavigate } from "react-router-dom";
+
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/config"); // Redirección a Configuración
+    } catch (err) {
+      setError("Credenciales incorrectas. Intenta de nuevo.");
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200">
+      <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+        {/* Encabezado */}
+        <h2 className="mb-2 text-center text-3xl font-extrabold text-gray-800">
+          SmartFlow
+        </h2>
+        <p className="mb-6 text-center text-sm text-gray-500">
+          Ingresa tus credenciales para continuar
+        </p>
+
+        {/* Formulario */}
+        <form onSubmit={handleLogin} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Correo electrónico
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-1 w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-400 sm:text-sm"
+              placeholder="tu@email.com"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Contraseña
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="mt-1 w-full rounded-lg border border-gray-300 p-3 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-400 sm:text-sm"
+              placeholder="********"
+            />
+          </div>
+
+          {/* Error */}
+          {error && (
+            <p className="text-center text-sm font-medium text-red-500">
+              {error}
+            </p>
+          )}
+
+          {/* Botón */}
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-blue-600 py-3 text-white font-semibold shadow-md transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            Iniciar sesión
+          </button>
+        </form>
+
+        {/* Footer */}
+        <p className="mt-6 text-center text-xs text-gray-400">
+          © 2025 SmartFlow. Todos los derechos reservados.
+        </p>
+      </div>
+    </div>
+  );
+}
