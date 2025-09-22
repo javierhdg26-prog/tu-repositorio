@@ -6,7 +6,10 @@ export default function useUpdateUser() {
     try {
       const ref = doc(db, "users", id);
       await updateDoc(ref, {
-        ...data,
+        name: data.name,
+        imageURL: data.imageURL || "",
+        position: data.position || "",
+        role: data.role || "Operario",
         updatedAt: serverTimestamp(),
       });
       console.log("✅ Usuario actualizado:", id);
