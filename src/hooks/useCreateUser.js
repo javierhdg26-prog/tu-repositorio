@@ -5,14 +5,17 @@ export default function useCreateUser() {
   const createUser = async (data) => {
     try {
       await addDoc(collection(db, "users"), {
-        ...data,
-        timestamp: serverTimestamp(),
+        userID: data.userID || "",
+        name: data.name || "",
+        imageURL: data.imageURL || "",
+        position: data.position || "",
+        role: data.role || "",
+        createdAt: serverTimestamp(),
       });
-      console.log("✅ Usuario creado exitosamente");
+      console.log("Usuario creado:", data.name);
     } catch (error) {
-      console.error("❌ Error al crear usuario:", error);
+      console.error("Error al crear usuario:", error);
     }
   };
-
   return { createUser };
 }
