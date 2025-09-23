@@ -1,18 +1,21 @@
-import { db } from "../firebase/initFirebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/initFirebase";
 
-export default function useCreateMachine() {
-  const createMachine = async (data) => {
-    try {
-      await addDoc(collection(db, "machines"), {
-        ...data,
-        timestamp: serverTimestamp(),
-      });
-      console.log("✅ Máquina creada exitosamente");
-    } catch (error) {
-      console.error("❌ Error al crear máquina:", error);
-    }
+const useCreateMachine = () => {
+  const createMachine = async (machineData) => {
+    const { name, reference, description, imageURL, type } = machineData;
+
+    await addDoc(collection(db, "machines"), {
+      name,
+      reference,
+      description,
+      imageURL,
+      type,
+      timestamp: serverTimestamp(),
+    });
   };
 
-  return { createMachine };
-}
+  return { createMachine }; // ✅ Devuelve un objeto con createMachine
+};
+
+export default useCreateMachine;

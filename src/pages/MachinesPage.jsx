@@ -1,6 +1,7 @@
+// src/pages/MachinesPage.jsx
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
-import { db } from "../firebase/initFirebase"; // asegúrate que apunte a tu initFirebase.js
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/initFirebase";
 import MachineFormModal from "../components/MachineFormModal";
 import ConfirmModal from "../components/ConfirmModal";
 import Notification from "../components/Notification";
@@ -14,38 +15,43 @@ export default function MachinesPage() {
 
   const machinesRef = collection(db, "machines");
 
-  // 🔄 Cargar máquinas desde Firestore
   useEffect(() => {
     fetchMachines();
   }, []);
 
   const fetchMachines = async () => {
-    const snapshot = await getDocs(machinesRef);
-    const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-    setMachines(data);
+    try {
+      const snapshot = await getDocs(machinesRef);
+      const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setMachines(data);
+    } catch (err) {
+      console.error("Error fetching machines:", err);
+      setNotification("❌ Error cargando máquinas");
+    }
   };
 
-  // ➕ Crear / ✏️ Editar
   const handleSave = async (machineData) => {
     try {
+      const { name, reference, description, imageURL, type } = machineData;
+
       if (selectedMachine) {
         const docRef = doc(db, "machines", selectedMachine.id);
-        await updateDoc(docRef, machineData);
-        setNotification("Máquina actualizada con éxito ✅");
+        await updateDoc(docRef, { name, reference, description, imageURL, type, timestamp: serverTimestamp() });
+        setNotification("Máquina actualizada ✅");
       } else {
-        await addDoc(machinesRef, machineData);
-        setNotification("Máquina creada con éxito ✅");
+        await addDoc(machinesRef, { name, reference, description, imageURL, type, timestamp: serverTimestamp() });
+        setNotification("Máquina creada ✅");
       }
+
       setShowForm(false);
       setSelectedMachine(null);
       fetchMachines();
     } catch (err) {
-      console.error(err);
+      console.error("Error saving machine:", err);
       setNotification("❌ Error al guardar la máquina");
     }
   };
 
-  // 🗑️ Eliminar
   const handleDelete = async () => {
     try {
       const docRef = doc(db, "machines", selectedMachine.id);
@@ -55,7 +61,7 @@ export default function MachinesPage() {
       setSelectedMachine(null);
       fetchMachines();
     } catch (err) {
-      console.error(err);
+      console.error("Error deleting machine:", err);
       setNotification("❌ Error al eliminar la máquina");
     }
   };
