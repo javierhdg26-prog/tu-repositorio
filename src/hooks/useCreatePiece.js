@@ -1,24 +1,30 @@
-// src/hooks/useCreatePiece.js
-import { db } from "../firebase/initFirebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/initFirebase";
+import { logTransaction } from "../utils/logTransaction";
 
-export default function useCreatePiece() {
-  const createPiece = async (data) => {
+const useCreatePiece = () => {
+  const createPiece = async (pieceData) => {
     try {
-      await addDoc(collection(db, "pieces"), {
-        name: data.name,
-        description: data.description || "",
-        reference: data.reference || "",
-        category: data.category,
-        cycleTime: Number(data.cycleTime),
-        imageURL: data.imageURL || "",
+      const allowedFields = ["name", "category", "cycleTime", "description", "imageURL", "reference", "material"];
+      const filteredData = {};
+      allowedFields.forEach((f) => {
+        if (pieceData[f]) filteredData[f] = pieceData[f];
+      });
+
+      const docRef = await addDoc(collection(db, "pieces"), {
+        ...filteredData,
         timestamp: serverTimestamp(),
       });
-      console.log("✅ Pieza creada exitosamente");
+
+      await logTransaction("pieces", "create", {}, { id: docRef.id, ...filteredData });
+      return { success: true, id: docRef.id };
     } catch (error) {
-      console.error("❌ Error al crear pieza:", error);
+      console.error("Error creando pieza:", error);
+      return { success: false, error };
     }
   };
 
   return { createPiece };
-}
+};
+
+export default useCreatePiece;

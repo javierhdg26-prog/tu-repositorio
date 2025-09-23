@@ -1,47 +1,23 @@
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-import { auth, db } from "../firebase/initFirebase";
+import { db, auth } from "../firebase/initFirebase";
 
 /**
- * Registra una transacción en Firestore (colección transactionLogs)
+ * Registra una transacción en Firestore
+ * @param {string} collectionName - Nombre de la colección afectada
+ * @param {string} action - Acción: "create", "update", "delete"
+ * @param {object} beforeData - Datos antes del cambio (opcional)
+ * @param {object} afterData - Datos después del cambio (opcional)
  */
 export async function logTransaction(collectionName, action, beforeData = {}, afterData = {}) {
   try {
     const user = auth.currentUser;
-    if (!user) return;
-
-    let changes = [];
-
-    if (action === "create") {
-      changes = Object.keys(afterData).map(field => ({
-        field,
-        initialValue: null,
-        finalValue: afterData[field]
-      }));
-    } else if (action === "delete") {
-      changes = Object.keys(beforeData).map(field => ({
-        field,
-        initialValue: beforeData[field],
-        finalValue: null
-      }));
-    } else if (action === "update") {
-      changes = Object.keys(afterData).reduce((acc, field) => {
-        if (beforeData[field] !== afterData[field]) {
-          acc.push({
-            field,
-            initialValue: beforeData[field] ?? null,
-            finalValue: afterData[field] ?? null
-          });
-        }
-        return acc;
-      }, []);
-    }
-
     await addDoc(collection(db, "transactionLogs"), {
-      timestamp: serverTimestamp(),
-      userID: user.uid,
+      userId: user ? user.uid : "anonymous",
       collection: collectionName,
       action,
-      changes
+      beforeData,
+      afterData,
+      timestamp: serverTimestamp(),
     });
   } catch (error) {
     console.error("Error registrando log:", error);

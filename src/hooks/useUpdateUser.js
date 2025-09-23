@@ -1,22 +1,32 @@
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/initFirebase";
+import { logTransaction } from "../utils/logTransaction";
 
-export default function useUpdateUser() {
-  const updateUser = async (id, data) => {
+const useUpdateUser = () => {
+  const updateUser = async (id, updatedData) => {
     try {
-      const ref = doc(db, "users", id);
-      await updateDoc(ref, {
-        name: data.name,
-        imageURL: data.imageURL || "",
-        position: data.position || "",
-        role: data.role || "Operario",
-        updatedAt: serverTimestamp(),
+      const userRef = doc(db, "users", id);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) throw new Error("Usuario no encontrado");
+
+      const beforeData = userSnap.data();
+      const allowedFields = ["name", "imageURL", "position", "role"];
+      const filteredData = {};
+      allowedFields.forEach((f) => {
+        if (f in updatedData) filteredData[f] = updatedData[f];
       });
-      console.log("✅ Usuario actualizado:", id);
+
+      await updateDoc(userRef, filteredData);
+      await logTransaction("users", "update", beforeData, filteredData);
+
+      return { success: true };
     } catch (error) {
-      console.error("❌ Error al actualizar usuario:", error);
+      console.error("Error actualizando usuario:", error);
+      return { success: false, error };
     }
   };
 
   return { updateUser };
-}
+};
+
+export default useUpdateUser;

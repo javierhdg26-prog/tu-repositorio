@@ -5,24 +5,18 @@ import { logTransaction } from "../utils/logTransaction";
 const useCreateUser = () => {
   const createUser = async (userData) => {
     try {
-      // Solo campos válidos para 'users'
-      const validUserData = {
-        name: userData.name,
-        imageURL: userData.imageURL,
-        position: userData.position,
-        role: userData.role,
-      };
-
-      // Crear usuario en Firestore
-      const docRef = await addDoc(collection(db, "users"), {
-        ...validUserData,
-        userID: "", // opcional, si quieres un userID aparte
-        createdAt: serverTimestamp(),
+      const allowedFields = ["name", "imageURL", "position", "role"];
+      const filteredData = {};
+      allowedFields.forEach((f) => {
+        if (userData[f]) filteredData[f] = userData[f];
       });
 
-      // Auditoría: registrar solo los campos válidos
-      await logTransaction("users", "create", {}, { id: docRef.id, ...validUserData });
+      const docRef = await addDoc(collection(db, "users"), {
+        ...filteredData,
+        timestamp: serverTimestamp(),
+      });
 
+      await logTransaction("users", "create", {}, { id: docRef.id, ...filteredData });
       return { success: true, id: docRef.id };
     } catch (error) {
       console.error("Error creando usuario:", error);
