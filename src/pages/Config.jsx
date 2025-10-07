@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import Header from "../components/Header";
 import {
   User,
   Settings,
+  SlidersHorizontal, // <--- AÑADE ESTA LÍNEA AQUÍ
   Package,
   Search,
   Edit,
@@ -21,7 +22,7 @@ import useCreatePiece from "../hooks/useCreatePiece";
 import useUpdatePiece from "../hooks/useUpdatePiece";
 import useDeletePiece from "../hooks/useDeletePiece";
 
-import { Dialog } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import Notification from "../components/Notification";
 
 // Modal para previsualizar imágenes
@@ -44,7 +45,7 @@ function ImagePreview({ url, onClose }) {
   );
 }
 
-// Formulario genérico
+// Formulario genérico (sin cambios)
 function EntityForm({ type, initialData, onSubmit, onClose }) {
   const [formData, setFormData] = useState(
     initialData || {
@@ -87,7 +88,6 @@ function EntityForm({ type, initialData, onSubmit, onClose }) {
         setError("Nombre y Categoría son obligatorios");
         return;
       }
-
       const cycleTimeValue = Number(formData.cycleTime);
       if (isNaN(cycleTimeValue) || cycleTimeValue <= 0) {
         setError("El tiempo de ciclo debe ser un número mayor a 0");
@@ -106,11 +106,11 @@ function EntityForm({ type, initialData, onSubmit, onClose }) {
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
           <Dialog.Title className="text-lg font-bold mb-4">
-            {initialData ? `Editar \${type}` : `Crear \${type}`}
+            {initialData ? `Editar ${type}` : `Crear ${type}`}
           </Dialog.Title>
           {error && <p className="text-red-600 text-sm mb-3">{error}</p>}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Usuarios */}
+            {/* Formulario de usuarios */}
             {type === "Usuario" && (
               <>
                 <input
@@ -149,7 +149,7 @@ function EntityForm({ type, initialData, onSubmit, onClose }) {
                 />
               </>
             )}
-            {/* Máquinas */}
+            {/* Formulario de máquinas */}
             {type === "Máquina" && (
               <>
                 <input
@@ -194,7 +194,7 @@ function EntityForm({ type, initialData, onSubmit, onClose }) {
                 />
               </>
             )}
-            {/* Piezas */}
+            {/* Formulario de piezas */}
             {type === "Pieza" && (
               <>
                 <input
@@ -279,7 +279,7 @@ function EntityForm({ type, initialData, onSubmit, onClose }) {
   );
 }
 
-// Confirmación de eliminación
+// Confirmación de eliminación (sin cambios)
 function ConfirmDelete({ isOpen, onClose, onConfirm, entityName }) {
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -308,8 +308,8 @@ function ConfirmDelete({ isOpen, onClose, onConfirm, entityName }) {
   );
 }
 
-// Columna genérica
-function EntityColumn({ title, Icon, data, onCreate, onUpdate, onDelete }) {
+// Columna genérica con engranaje agregado
+function EntityColumn({ title, Icon, data, onCreate, onUpdate, onDelete, onOpenConfigModal }) {
   const [query, setQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
@@ -318,7 +318,6 @@ function EntityColumn({ title, Icon, data, onCreate, onUpdate, onDelete }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [notification, setNotification] = useState(null);
 
-  
   const source = Array.isArray(data) ? data : (data && data.data ? data.data : data || {});
   const items = Array.isArray(source) ? source : Object.values(source || {});
   const filtered = (items || [])
@@ -327,7 +326,6 @@ function EntityColumn({ title, Icon, data, onCreate, onUpdate, onDelete }) {
     .filter((item) =>
       (item.name || "").toLowerCase().includes(query.toLowerCase())
     );
-
 
   useEffect(() => {
     if (notification) {
@@ -338,37 +336,52 @@ function EntityColumn({ title, Icon, data, onCreate, onUpdate, onDelete }) {
 
   const handleCreate = async (formData) => {
     await onCreate(formData);
-    setNotification(`\${title.slice(0, -1)} creado exitosamente`);
+    setNotification(`${title.slice(0, -1)} creado exitosamente`);
   };
 
   const handleUpdate = async (id, formData) => {
     await onUpdate(id, formData);
-    setNotification(`\${title.slice(0, -1)} actualizado exitosamente`);
+    setNotification(`${title.slice(0, -1)} actualizado exitosamente`);
   };
 
   const handleDelete = async (id) => {
     await onDelete(id);
-    setNotification(`\${title.slice(0, -1)} eliminado exitosamente`);
+    setNotification(`${title.slice(0, -1)} eliminado exitosamente`);
+  };
+
+  const handleGearClick = () => {
+    console.log(`Abrir configuración de ${title}`);
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 flex flex-col">
-      <div className="flex items-center gap-2 mb-4">
-        <Icon className="text-blue-600" size={22} />
-        <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-200 flex flex-col relative">
+      {/* Encabezado con icono y engranaje */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Icon className="text-blue-600" size={22} />
+          <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+        </div>
+        <button
+          onClick={handleGearClick}
+          className="p-1 text-gray-500 hover:text-gray-700 transition"
+        >
+                    <SlidersHorizontal size={22} /> {/* <-- CAMBIADO: Ahora usa SlidersHorizontal para configuración avanzada */}
+        </button>
       </div>
 
+      {/* Búsqueda */}
       <div className="relative mb-4">
         <Search className="absolute left-3 top-3 text-gray-400" size={18} />
         <input
           type="text"
-          placeholder={`Buscar \${title.toLowerCase()}...`}
+          placeholder={`Buscar ${title.toLowerCase()}...`}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>
 
+      {/* Lista de elementos */}
       <ul className="flex-1 space-y-3 overflow-y-auto">
         {filtered.map((item) => (
           <li
@@ -434,9 +447,7 @@ function EntityColumn({ title, Icon, data, onCreate, onUpdate, onDelete }) {
           type={title.slice(0, -1)}
           initialData={editingItem}
           onSubmit={(data) =>
-            editingItem
-              ? handleUpdate(editingItem.id, data)
-              : handleCreate(data)
+            editingItem ? handleUpdate(editingItem.id, data) : handleCreate(data)
           }
           onClose={() => setShowForm(false)}
         />
@@ -458,20 +469,17 @@ function EntityColumn({ title, Icon, data, onCreate, onUpdate, onDelete }) {
         <ImagePreview url={previewImage} onClose={() => setPreviewImage(null)} />
       )}
       {notification && (
-        <Notification
-          message={notification}
-          onClose={() => setNotification(null)}
-        />
+        <Notification message={notification} onClose={() => setNotification(null)} />
       )}
     </div>
   );
 }
 
-// Vista principal
+// Vista principal con columnas
 export default function Config() {
-  const { data: users, loading: loadingUsers } = useFetchCollection("users");
-  const { data: machines, loading: loadingMachines } = useFetchCollection("machines");
-  const { data: pieces, loading: loadingPieces } = useFetchCollection("pieces");
+  const { data: users } = useFetchCollection("users");
+  const { data: machines } = useFetchCollection("machines");
+  const { data: pieces } = useFetchCollection("pieces");
 
   const { createUser } = useCreateUser();
   const { updateUser } = useUpdateUser();
